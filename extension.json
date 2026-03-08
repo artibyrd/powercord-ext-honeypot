@@ -1,0 +1,12 @@
+{
+    "name": "honeypot",
+    "version": "1.0.0",
+    "description": "Automatic spammer-banning via monitored honeypot channels.",
+    "python_dependencies": [],
+    "discord_permissions": [
+        "ban_members",
+        "manage_channels"
+    ],
+    "has_migrations": true,
+    "internal": false
+}
