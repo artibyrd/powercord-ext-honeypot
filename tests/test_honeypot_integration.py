@@ -6,6 +6,9 @@ from app.common.alchemy import get_session
 from app.extensions.honeypot.blueprint import HoneypotChannel, HoneypotSettings
 from app.main_api import app
 
+# All tests in this file are integration tests (FastAPI TestClient, DB sessions).
+pytestmark = pytest.mark.integration
+
 
 @pytest.fixture
 def auth_cookies():
