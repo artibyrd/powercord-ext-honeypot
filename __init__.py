@@ -13,13 +13,6 @@ from .blueprint import (
     HoneypotSettings as HoneypotSettings,
 )
 
-try:
-    engine = init_connection_engine()
-    # Create tables if they don't exist
-    SQLModel.metadata.create_all(engine)
-except Exception as e:
-    print(f"Warning: Could not create tables for honeypot extension: {e}")
-
 
 def _delete_guild_data(guild_id: int) -> None:
     """Remove all honeypot data for a specific guild."""

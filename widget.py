@@ -11,7 +11,7 @@ from .blueprint import HoneypotBanReport, HoneypotChannel, HoneypotSettings
 engine = init_connection_engine()
 
 
-def guild_admin_honeypot_config(guild_id: int):
+def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
     """Widget to configure the honeypot extension for a specific guild.
 
     This widget fetches the current time limit and tracked channels from the
@@ -67,7 +67,7 @@ def guild_admin_honeypot_config(guild_id: int):
             cls="mb-4",
         ),
         Button("Save Settings", cls="btn btn-primary btn-sm"),
-        action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/settings",
+        action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/settings?token={access_token}",
         method="post",
         cls="mb-6 p-4 bg-base-200 rounded-lg",
     )
@@ -85,7 +85,7 @@ def guild_admin_honeypot_config(guild_id: int):
     else:
         clear_all_form = Form(
             Button("Remove All", cls="btn btn-error btn-sm"),
-            action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/clear_channels",
+            action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/clear_channels?token={access_token}",
             method="post",
             cls="mb-4",
         )
@@ -98,7 +98,7 @@ def guild_admin_honeypot_config(guild_id: int):
                         Form(
                             Hidden(name="channel_id", value=str(ch.channel_id)),
                             Button("Remove", cls="btn btn-error btn-xs"),
-                            action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/remove_channel",
+                            action=f"http://127.0.0.1:8000/honeypot/config/{guild_id}/remove_channel?token={access_token}",
                             method="post",
                             cls="inline-block ml-4",
                         ),

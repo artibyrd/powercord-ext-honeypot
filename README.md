@@ -22,8 +22,10 @@ The `honeypot` extension provides automatic spammer-banning capabilities for Pow
   - `on_message`: Tracks when users post in honeypot channels using an in-memory dictionary. Calculates time differences and issues bans if conditions are met.
 
 ### API Routes (Sprockets)
-- `POST /honeypot/config/{guild_id}/time_limit`: Updates the time limit setting for a specific guild.
+*Note: As of the recent framework security updates, these endpoints are strictly protected behind the `api_scope_required("honeypot")` middleware. They require a valid internal API Key or Discord token passed via an `Authorization: Bearer` header or `?token=` query parameter.*
+- `POST /honeypot/config/{guild_id}/settings`: Updates the time limit setting for a specific guild.
 - `POST /honeypot/config/{guild_id}/remove_channel`: Removes a channel from the honeypot tracking list.
+- `POST /honeypot/config/{guild_id}/clear_channels`: Removes all active honeypot tracking channels for a guild.
 
 ### UI Elements (Widgets)
 - `guild_admin_honeypot_config`: Displays forms in the Admin Dashboard to precisely set the time limit and manage active honeypot channels.
@@ -38,3 +40,6 @@ The honeypot extension registers a `delete_guild_data` lifecycle hook. When a se
 - `HoneypotBanReport` (ban history records)
 
 Additionally, Powercord's core `GuildExtensionSettings` and `WidgetSettings` rows for this extension are cleaned up.
+
+### Graceful Reinstallations
+This extension uses the `latest_migration_version` key in its `extension.json` manifest. Running `just ext-install` on an already installed Honeypot extension will gracefully overwrite the Python files and skip the lengthy Alembic database migration phases if the version has not incremented, significantly speeding up the developer deployment workflow.
