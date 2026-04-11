@@ -8,6 +8,6 @@
         "manage_channels"
     ],
     "has_migrations": true,
-    "latest_migration_version": "1c7fc4ef8015",
+    "latest_migration_version": "honey0001",
     "internal": false
 }
