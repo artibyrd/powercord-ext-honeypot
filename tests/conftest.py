@@ -21,9 +21,4 @@ if powercord_dir not in sys.path:
 from app.common.testing import setup_extension_test_env
 setup_extension_test_env("honeypot", __file__)
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-
-@pytest.fixture
-def session():
-    return MagicMock()
+pytest_plugins = ["tests.conftest"]
