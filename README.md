@@ -44,3 +44,9 @@ Additionally, Powercord's core `GuildExtensionSettings` and `WidgetSettings` row
 ### Graceful Reinstallations & Decoupled Migrations
 This extension governs its own disconnected idempotent database schema via a standalone `alembic/versions` directory (completely isolated from the Powercord core database history).
 It uses the `latest_migration_version` key in its `extension.json` manifest to instruct Powercord which decoupled schema branch to target during installation. Running `just ext-install` on an already installed Honeypot extension will gracefully overwrite the Python files and dynamically detect if the `latest_migration_version` hash has incremented. If it has not, the installer intelligently skips the Alembic database mapping phases, rapidly speeding up developer deployment workflows.
+
+## Local Development and Testing
+
+You can run this extension's test suite standalone natively via `just test`. 
+
+> **Important**: This extension relies on the `powercord` core framework for testing utilities. Ensure the core repository is cloned natively as a sibling directory to this extension, or manually set the `POWERCORD_PATH` environment variable pointing to the core `powercord` repository.
