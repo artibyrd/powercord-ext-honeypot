@@ -9,6 +9,7 @@ class HoneypotSettings(SQLModel, table=True):
     """Stores configuration for the honeypot extension per guild."""
 
     __tablename__ = "honeypot_settings"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     guild_id: int = Field(sa_column=Column(BigInteger, unique=True, index=True))
@@ -21,6 +22,7 @@ class HoneypotChannel(SQLModel, table=True):
     """Tracks which channels are designated as honeypots."""
 
     __tablename__ = "honeypot_channels"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     guild_id: int = Field(sa_column=Column(BigInteger, index=True))
@@ -32,6 +34,7 @@ class HoneypotBanReport(SQLModel, table=True):
     """Log of bans executed by the honeypot extension."""
 
     __tablename__ = "honeypot_ban_reports"
+    __table_args__ = {"extend_existing": True}
 
     id: Optional[int] = Field(default=None, primary_key=True)
     guild_id: int = Field(sa_column=Column(BigInteger, index=True))

@@ -1,4 +1,4 @@
-from sqlmodel import Session, SQLModel, col, delete
+from sqlmodel import Session, col, delete
 
 from app.common.alchemy import init_connection_engine
 from app.common.extension_hooks import register_hook

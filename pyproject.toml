@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "honeypot"
+version = "1.0.0"
+description = "Automatic spammer-banning via monitored honeypot channels."
+authors = ["None <none@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.15.10"
+mypy = "^1.20.1"
+pytest = "^9.0.3"
+nextcord = "^3.1.1"
+sqlmodel = "^0.0.38"
+pytest-asyncio = "^1.3.0"
+google-cloud-logging = "^3.15.0"
+fastapi = "^0.135.3"
+sqlalchemy = "^2.0.49"
+python-dotenv = "^1.2.2"
+google-cloud-secret-manager = "^2.27.0"
+pathvalidate = "^3.3.1"
+pg8000 = "^1.31.5"
+python-fasthtml = "^0.13.3"
+sanitize-filename = "^1.2.0"
+alembic = "^1.18.4"
+psutil = "^7.2.2"
+nh3 = "^0.3.4"
+markdown = "^3.10.2"
+rich = "^15.0.0"
+
+[tool.powercord]
+discord_permissions = [
+    "ban_members",
+    "manage_channels"
+]
+has_migrations = true
+latest_migration_version = "honey0001"
+internal = false
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-ignore = ["F403", "F405", "S311", "B008", "E741", "S101"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

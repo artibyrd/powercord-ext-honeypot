@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from sqlmodel import select
 from unittest.mock import patch
 
-from app.api.dependencies import get_current_api_user
 from app.common.alchemy import get_session
 from app.db.models import ApiKey
 from app.extensions.honeypot.blueprint import HoneypotChannel, HoneypotSettings
@@ -38,8 +37,10 @@ def test_honeypot_update_settings(session):
 
     app.dependency_overrides[get_session] = override_get_session
 
-    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()), \
-         patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"):
+    with (
+        patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()),
+        patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"),
+    ):
         with TestClient(app) as client:
             response = client.post(
                 f"/honeypot/config/{guild_id}/settings",
@@ -52,7 +53,7 @@ def test_honeypot_update_settings(session):
     print("STATUS", response.status_code)
     try:
         print("JSON", response.json())
-    except:
+    except Exception:
         print("TEXT", response.text)
     assert response.status_code in [200, 302, 303]
 
@@ -85,8 +86,10 @@ def test_honeypot_remove_channel(session):
 
     app.dependency_overrides[get_session] = override_get_session
 
-    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()), \
-         patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"):
+    with (
+        patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()),
+        patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"),
+    ):
         with TestClient(app) as client:
             response = client.post(
                 f"/honeypot/config/{guild_id}/remove_channel",
@@ -98,7 +101,7 @@ def test_honeypot_remove_channel(session):
     print("STATUS", response.status_code)
     try:
         print("JSON", response.json())
-    except:
+    except Exception:
         print("TEXT", response.text)
     assert response.status_code in [200, 302, 303]
 
