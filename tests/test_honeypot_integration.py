@@ -38,7 +38,8 @@ def test_honeypot_update_settings(session):
 
     app.dependency_overrides[get_session] = override_get_session
 
-    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()):
+    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()), \
+         patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"):
         with TestClient(app) as client:
             response = client.post(
                 f"/honeypot/config/{guild_id}/settings",
@@ -84,7 +85,8 @@ def test_honeypot_remove_channel(session):
 
     app.dependency_overrides[get_session] = override_get_session
 
-    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()):
+    with patch("app.api.dependencies.init_connection_engine", return_value=session.get_bind()), \
+         patch("app.api.dependencies.get_or_create_internal_key", return_value="__not_the_test_key__"):
         with TestClient(app) as client:
             response = client.post(
                 f"/honeypot/config/{guild_id}/remove_channel",
