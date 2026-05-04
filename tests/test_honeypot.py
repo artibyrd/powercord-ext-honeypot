@@ -9,8 +9,8 @@ from app.extensions.honeypot.blueprint import HoneypotBanReport, HoneypotChannel
 from app.extensions.honeypot.cog import HoneypotCog
 from app.extensions.honeypot.widget import guild_admin_honeypot_config, guild_admin_honeypot_reports
 
-# All tests in this file are unit tests (mocked DB, no external services).
-pytestmark = pytest.mark.unit
+# All tests in this file are integration tests because they use the session fixture which requires a real database connection.
+pytestmark = pytest.mark.integration
 
 
 # Mock objects for Nextcord
