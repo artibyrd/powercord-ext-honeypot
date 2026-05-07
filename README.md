@@ -10,6 +10,21 @@ The `honeypot` extension provides automatic spammer-banning capabilities for Pow
 - `HoneypotChannel`: Tracks which channels in a guild are designated as honeypots.
 - `HoneypotBanReport`: Logs records of successful automatic bans for dashboard reporting.
 
+## Architecture
+
+The honeypot extension follows the standard Powercord split-stack pattern:
+
+| Component | Server | Purpose |
+|-----------|--------|---------|
+| `widget.py` | FastHTML (UI) | Renders dashboard configuration forms using HTMX |
+| `routes.py` | FastHTML (UI) | Handles form submissions from widgets, performs DB operations, returns re-rendered HTML fragments |
+| `sprocket.py` | FastAPI (API) | JSON API for external consumers (Flet companion, bots, third-party integrations) |
+| `cog.py` | Discord Bot | Slash commands and message listeners |
+
+> **Note:** The `routes.py` and `sprocket.py` operate independently. Widget forms POST
+> to `routes.py` (same-origin FastHTML routes) via HTMX, *not* to the sprocket. The
+> sprocket remains available for programmatic API access by external tools.
+
 ## Features
 
 ### Bot Features (Cogs)
@@ -21,14 +36,26 @@ The `honeypot` extension provides automatic spammer-banning capabilities for Pow
 - **Listeners**:
   - `on_message`: Tracks when users post in honeypot channels using an in-memory dictionary. Calculates time differences and issues bans if conditions are met.
 
-### API Routes (Sprockets)
-*Note: As of the recent framework security updates, these endpoints are strictly protected behind the `api_scope_required("honeypot")` middleware. They require a valid internal API Key or Discord token passed via an `Authorization: Bearer` header or `?token=` query parameter.*
-- `POST /honeypot/config/{guild_id}/settings`: Updates the time limit setting for a specific guild.
-- `POST /honeypot/config/{guild_id}/remove_channel`: Removes a channel from the honeypot tracking list.
+### Dashboard UI Routes (`routes.py`)
+These endpoints run on the **FastHTML** server and handle form submissions from
+the dashboard widgets. They query the database directly and return re-rendered
+HTML fragments for HTMX to swap in-place.
+
+- `POST /honeypot/config/{guild_id}/settings`: Upserts the time limit, log channel, and shame mode settings.
+- `POST /honeypot/config/{guild_id}/remove_channel`: Removes a single channel from the honeypot tracking list.
 - `POST /honeypot/config/{guild_id}/clear_channels`: Removes all active honeypot tracking channels for a guild.
 
+### API Routes (`sprocket.py`)
+*These endpoints run on the **FastAPI** server and are intended for external consumers
+(Flet companion client, bots, third-party tools). They are strictly protected behind the
+`api_scope_required("honeypot")` middleware and require a valid API Key or Discord token.*
+
+- `POST /honeypot/config/{guild_id}/settings`: Updates settings (accepts `Form(...)` data, returns redirect).
+- `POST /honeypot/config/{guild_id}/remove_channel`: Removes a channel (accepts `Form(...)` data, returns redirect).
+- `POST /honeypot/config/{guild_id}/clear_channels`: Clears all channels (returns redirect).
+
 ### UI Elements (Widgets)
-- `guild_admin_honeypot_config`: Displays forms in the Admin Dashboard to precisely set the time limit and manage active honeypot channels.
+- `guild_admin_honeypot_config`: Displays forms in the Admin Dashboard to set the time limit, log channel, shame mode, and manage active honeypot channels. Uses **HTMX** (`hx_post`, `hx_target`, `hx_swap`) for in-place widget updates without full page reloads.
 - `guild_admin_honeypot_reports`: Displays a table of the 10 most recent spammers banned by the extension.
 
 ## Lifecycle Hooks
@@ -50,3 +77,4 @@ It uses the `latest_migration_version` key in its `extension.json` manifest to i
 You can run this extension's test suite standalone natively via `just test`. 
 
 > **Important**: This extension relies on the `powercord` core framework for testing utilities. Ensure the core repository is cloned natively as a sibling directory to this extension, or manually set the `POWERCORD_PATH` environment variable pointing to the core `powercord` repository.
+

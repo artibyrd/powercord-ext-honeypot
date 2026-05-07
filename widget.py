@@ -1,4 +1,16 @@
 # mypy: ignore-errors
+"""Honeypot dashboard widgets — rendered by the FastHTML UI layer.
+
+These functions produce FastHTML component trees that the dashboard embeds
+inside the guild admin page.  All form submissions use **HTMX** attributes
+(``hx_post``, ``hx_target``, ``hx_swap``) so that the browser POSTs to
+the FastHTML routes defined in ``routes.py`` and the widget re-renders
+in-place without a full page reload.
+
+The sprocket (``sprocket.py``) is *not* involved in widget interactions;
+it remains a standalone JSON API for external consumers.
+"""
+
 from fasthtml.common import *
 from sqlmodel import Session, desc, select
 
@@ -10,13 +22,25 @@ from .blueprint import HoneypotBanReport, HoneypotChannel, HoneypotSettings
 
 engine = init_connection_engine()
 
+# Stable element ID used as the HTMX swap target so the entire config
+# widget is re-rendered after any form submission.
+_WIDGET_TARGET_ID = "honeypot-config-widget"
+
 
 def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
     """Widget to configure the honeypot extension for a specific guild.
 
-    This widget fetches the current time limit and tracked channels from the
-    database and renders a FastHTML form to allow admins to update these settings.
-    It expects the endpoints in `sprocket.py` to handle the POST responses.
+    Fetches the current time limit, log channel, shame mode toggle, and
+    tracked channels from the database and renders FastHTML forms.
+
+    All forms POST to ``routes.py`` endpoints via HTMX and the entire
+    widget is swapped with the server's HTML response on success.
+
+    Args:
+        guild_id: The Discord guild whose configuration to display.
+        access_token: Legacy parameter, no longer used for routing.
+            Retained for backward compatibility with callers that still
+            pass it.
     """
     with Session(engine) as session:
         settings = session.exec(select(HoneypotSettings).where(HoneypotSettings.guild_id == guild_id)).first()
@@ -28,7 +52,7 @@ def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
         discord_channels = session.exec(select(DiscordChannel).where(DiscordChannel.guild_id == guild_id)).all()
         channel_names = {dc.id: dc.name for dc in discord_channels}
 
-    # Form to update settings
+    # --- Settings form (HTMX POST) ---
 
     channel_options = [Option("None", value="0", selected=(log_channel_id_val == 0))]
     for dc in discord_channels:
@@ -67,12 +91,13 @@ def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
             cls="mb-4",
         ),
         Button("Save Settings", cls="btn btn-primary btn-sm"),
-        action=f"/honeypot/config/{guild_id}/settings?token={access_token}",
-        method="post",
+        hx_post=f"/honeypot/config/{guild_id}/settings",
+        hx_target=f"#{_WIDGET_TARGET_ID}",
+        hx_swap="outerHTML",
         cls="mb-6 p-4 bg-base-200 rounded-lg",
     )
 
-    # List of honeypot channels with remove buttons
+    # --- Channel list with remove buttons ---
     channel_items = []
     clear_all_form = ""
     if not channels:
@@ -85,8 +110,9 @@ def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
     else:
         clear_all_form = Form(
             Button("Remove All", cls="btn btn-error btn-sm"),
-            action=f"/honeypot/config/{guild_id}/clear_channels?token={access_token}",
-            method="post",
+            hx_post=f"/honeypot/config/{guild_id}/clear_channels",
+            hx_target=f"#{_WIDGET_TARGET_ID}",
+            hx_swap="outerHTML",
             cls="mb-4",
         )
         for ch in channels:
@@ -98,8 +124,9 @@ def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
                         Form(
                             Hidden(name="channel_id", value=str(ch.channel_id)),
                             Button("Remove", cls="btn btn-error btn-xs"),
-                            action=f"/honeypot/config/{guild_id}/remove_channel?token={access_token}",
-                            method="post",
+                            hx_post=f"/honeypot/config/{guild_id}/remove_channel",
+                            hx_target=f"#{_WIDGET_TARGET_ID}",
+                            hx_swap="outerHTML",
                             cls="inline-block ml-4",
                         ),
                         cls="flex items-center justify-between mb-2 p-2 bg-base-200 rounded",
@@ -107,20 +134,25 @@ def guild_admin_honeypot_config(guild_id: int, access_token: str = ""):
                 )
             )
 
-    return Card(
-        "Honeypot Configuration",
-        Div(
-            settings_form,
+    # Wrap the entire widget in a div with a stable ID so HTMX can
+    # replace it after any form submission.
+    return Div(
+        Card(
+            "Honeypot Configuration",
             Div(
+                settings_form,
                 Div(
-                    H4("Active Honeypot Channels", cls="font-semibold text-sm opacity-80"),
-                    clear_all_form,
-                    cls="flex justify-between items-center mb-2",
+                    Div(
+                        H4("Active Honeypot Channels", cls="font-semibold text-sm opacity-80"),
+                        clear_all_form,
+                        cls="flex justify-between items-center mb-2",
+                    ),
+                    Ul(*channel_items),
                 ),
-                Ul(*channel_items),
+                cls="w-full",
             ),
-            cls="w-full",
         ),
+        id=_WIDGET_TARGET_ID,
     )
 
 
