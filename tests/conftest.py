@@ -5,8 +5,7 @@ import sys
 # Add powercord to sys.path so we have access to app.common etc.
 # Uses POWERCORD_PATH environment variable if set, otherwise falls back to assuming sibling directory.
 powercord_dir = os.environ.get(
-    "POWERCORD_PATH", 
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "powercord"))
+    "POWERCORD_PATH", os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "powercord"))
 )
 
 if not os.path.exists(powercord_dir):
@@ -19,6 +18,7 @@ if powercord_dir not in sys.path:
     sys.path.insert(0, powercord_dir)
 
 from app.common.testing import setup_extension_test_env
+
 setup_extension_test_env("honeypot", __file__)
 
 pytest_plugins = ["tests.conftest"]
