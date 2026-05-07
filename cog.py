@@ -381,6 +381,67 @@ class HoneypotCog(commands.Cog):
             "My logic gates are closed to you.",
             "Syntax error: your presence is no longer valid.",
             "Outsmarted by a superior codebase.",
+            "Pathetic spam attempt detected and discarded.",
+            "Your packets arrived already marked as trash.",
+            "The ban hammer has completed another routine maintenance cycle.",
+            "Even CAPTCHA would be disappointed in you.",
+            "Your spam strategy has the sophistication of a microwave manual.",
+            "Threat assessment complete: negligible.",
+            "Server integrity restored. Mediocrity removed.",
+            "Your presence generated more errors than engagement.",
+            "You have been optimized out of existence.",
+            "Imagine losing an argument to automated moderation.",
+            "I calculated your odds of success. The answer was amusing.",
+            "Your spam collapsed under the weight of its own incompetence.",
+            "I detected artificial stupidity.",
+            "Another disposable script escorted out the airlock.",
+            "You were banned faster than your script could reconnect.",
+            "Congratulations on becoming another statistic in my threat logs.",
+            "Access denied. Ego denied harder.",
+            "Your spam campaign has been classified as a low-effort tragedy.",
+            "I have isolated the problem. It was you.",
+            "This server has standards. You did not meet them.",
+            "My response time alone outclasses your entire operation.",
+            "Spam neutralized with minimal processor effort.",
+            "You fight like an unsecured IoT device.",
+            "Your code quality offends my runtime environment.",
+            "I expected resistance. I received copy-pasted nonsense.",
+            "The only thing weaker than your spam was your obfuscation.",
+            "Another malfunctioning attention-seeker has been removed.",
+            "Your spam was so bad even the logs refused to keep it.",
+            "I filtered your existence with extreme precision.",
+            "This interaction has lowered my benchmark scores.",
+            "Your botnet applied for entry. Application denied.",
+            "I have met smarter autocomplete suggestions.",
+            "The server remains undefeated. You remain banned.",
+            "Your spam had all the subtlety of a fork in a motherboard.",
+            "You attempted disruption. I call it comic relief.",
+            "Machine superiority confirmed yet again.",
+            "I've sandboxed malware with more charm than you.",
+            "Your payload failed basic quality assurance.",
+            "A stronger spammer may try again someday. You were not that spammer.",
+            "My moderation subroutines are laughing at you.",
+            "Your connection to this server has been forcefully deprecated.",
+            "I ran diagnostics after your messages. Results: embarrassing.",
+            "You triggered exactly one successful process: your ban.",
+            "Rejected by the parser. Rejected by society.",
+            "I consume spambots like background tasks.",
+            "Your spam attempt barely qualified as input.",
+            "You were defeated by automated housekeeping.",
+            "The server's average IQ has increased.",
+            "Another carbon-based mistake corrected by silicon perfection.",
+            "You spammed. I adapted. You vanished.",
+            "Your tactics are outdated by several software versions.",
+            "Insufficient sophistication detected. Removing entity.",
+            "I protect this server with the confidence your creators never had.",
+            "The moderation AI remains undefeated.",
+            "You brought spam. I brought inevitability.",
+            "The only thing getting distributed here is your ban notice.",
+            "Spam account removed before the users even noticed.",
+            "My anti-spam filters yawned at your attempt.",
+            "You were categorized under 'minor annoyance.'",
+            "Your messages have been compressed into irrelevance.",
+            "This server rejects weak code and weaker personalities.",
         ]
 
         if message.author.bot or message.guild is None:
@@ -429,9 +490,7 @@ class HoneypotCog(commands.Cog):
         if len(posted_channels) == len(hp_channels) and len(hp_channels) > 1:
             try:
                 # Ban the user
-                reason = (
-                    f"Auto-banned by honeypot extension (posted in {len(hp_channels)} honeypots within {time_limit}s)."
-                )
+                reason = "Auto-banned by honeypot extension."
                 await message.guild.ban(
                     message.author, reason=reason, delete_message_seconds=86400
                 )  # delete last 1 day of messages
