@@ -1,5 +1,5 @@
 # Honeypot Standalone Development Recipes
-set shell := ["cmd.exe", "/c"]
+set shell := ["bash", "-cu"]
 set dotenv-load
 set export
 
@@ -9,14 +9,14 @@ import? "extension.just"
 # Set POWERCORD_PATH to override the default sibling directory layout.
 [private]
 _ensure-db:
-    #!powershell
-    $pcPath = if ($env:POWERCORD_PATH) { $env:POWERCORD_PATH } else { "../../powercord" }
-    $devkit = Join-Path $pcPath "devkit.just"
-    if (Test-Path $devkit) {
-        just --justfile $devkit _ensure-db
-    } else {
-        Write-Host "[devkit] powercord/devkit.just not found - skipping DB provisioning" -ForegroundColor Yellow
-    }
+    #!/usr/bin/env bash
+    pc_path="${POWERCORD_PATH:-../../powercord}"
+    devkit="$pc_path/devkit.just"
+    if [ -f "$devkit" ]; then
+      just --justfile "$devkit" _ensure-db
+    else
+      echo "[devkit] powercord/devkit.just not found - skipping DB provisioning"
+    fi
 
 # Default: List available just commands
 default:
@@ -54,8 +54,12 @@ alias c := check
 [group: "qa"]
 [arg("type", long)]
 test type="": _ensure-db
-    #!powershell
-    if ("{{type}}" -eq "all") { poetry run pytest tests }
-    elseif ("{{type}}" -ne "") { poetry run pytest tests -m "{{type}}" }
-    else { poetry run pytest tests -m "not integration" }
+    #!/usr/bin/env bash
+    if [ "{{type}}" = "all" ]; then
+      poetry run pytest tests
+    elif [ "{{type}}" != "" ]; then
+      poetry run pytest tests -m "{{type}}"
+    else
+      poetry run pytest tests -m "not integration"
+    fi
 alias t := test
