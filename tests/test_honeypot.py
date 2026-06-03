@@ -128,7 +128,8 @@ async def test_honeypot_logic(honeypot_cog, session):
     ban_user_arg = guild.ban.call_args.args[0]
     ban_kwargs = guild.ban.call_args.kwargs
     assert ban_user_arg.id == user_id
-    assert "posted in 2 honeypots within 60s" in ban_kwargs["reason"]
+    # Verify the ban reason is the standard generic message to prevent leaking implementation details.
+    assert ban_kwargs["reason"] == "Auto-banned by honeypot extension."
 
     # Verify log message sent
     guild.get_channel.assert_called_with(log_channel_id)
