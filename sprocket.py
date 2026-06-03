@@ -18,7 +18,7 @@ async def update_settings(
     shame_mode: bool = Form(False),
     session: Session = Depends(get_session),
 ):
-    """Update the settings for the honeypot extension via the dashboard."""
+    """Update the settings for the honeypot extension via the API."""
     if time_limit <= 0:
         raise HTTPException(status_code=400, detail="Time limit must be positive.")
 
@@ -48,7 +48,7 @@ async def update_settings(
 async def remove_channel(
     request: Request, guild_id: int, channel_id: int = Form(...), session: Session = Depends(get_session)
 ):
-    """Remove a channel from honeypot list via dashboard."""
+    """Remove a channel from honeypot list via the API."""
     channel = session.exec(
         select(HoneypotChannel).where(HoneypotChannel.guild_id == guild_id, HoneypotChannel.channel_id == channel_id)
     ).first()
@@ -64,7 +64,7 @@ async def remove_channel(
 
 @router.post("/config/{guild_id}/clear_channels")
 async def clear_channels(request: Request, guild_id: int, session: Session = Depends(get_session)):
-    """Remove all channels from honeypot list via dashboard."""
+    """Remove all channels from honeypot list via the API."""
     channels = session.exec(select(HoneypotChannel).where(HoneypotChannel.guild_id == guild_id)).all()
 
     for channel in channels:
