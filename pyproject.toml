@@ -38,6 +38,16 @@ has_migrations = true
 latest_migration_version = "honey0001"
 internal = false
 
+[[tool.powercord.default_widgets]]
+widget_name = "guild_admin_honeypot_reports"
+display_order = 7
+column_span = 6
+
+[[tool.powercord.default_widgets]]
+widget_name = "guild_admin_honeypot_config"
+display_order = 8
+column_span = 6
+
 [tool.ruff]
 line-length = 120
 
