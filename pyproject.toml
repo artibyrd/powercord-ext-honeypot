@@ -40,12 +40,12 @@ internal = false
 
 [[tool.powercord.default_widgets]]
 widget_name = "guild_admin_honeypot_reports"
-display_order = 7
+display_order = 8
 column_span = 6
 
 [[tool.powercord.default_widgets]]
 widget_name = "guild_admin_honeypot_config"
-display_order = 8
+display_order = 9
 column_span = 6
 
 [tool.ruff]
