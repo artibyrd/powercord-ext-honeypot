@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from sqlmodel import Session, select
 
+from app.api.dependencies import api_scope_required
 from app.common.alchemy import get_session
 
 from .blueprint import HoneypotChannel, HoneypotSettings
@@ -9,7 +10,7 @@ from .blueprint import HoneypotChannel, HoneypotSettings
 router = APIRouter()
 
 
-@router.post("/config/{guild_id}/settings")
+@router.post("/config/{guild_id}/settings", dependencies=[Depends(api_scope_required("honeypot", level="admin"))])
 async def update_settings(
     request: Request,
     guild_id: int,
@@ -44,7 +45,7 @@ async def update_settings(
     return RedirectResponse(referer or f"/dashboard/{guild_id}", status_code=303)
 
 
-@router.post("/config/{guild_id}/remove_channel")
+@router.post("/config/{guild_id}/remove_channel", dependencies=[Depends(api_scope_required("honeypot", level="admin"))])
 async def remove_channel(
     request: Request, guild_id: int, channel_id: int = Form(...), session: Session = Depends(get_session)
 ):
@@ -62,7 +63,7 @@ async def remove_channel(
     return RedirectResponse(referer or f"/dashboard/{guild_id}", status_code=303)
 
 
-@router.post("/config/{guild_id}/clear_channels")
+@router.post("/config/{guild_id}/clear_channels", dependencies=[Depends(api_scope_required("honeypot", level="admin"))])
 async def clear_channels(request: Request, guild_id: int, session: Session = Depends(get_session)):
     """Remove all channels from honeypot list via the API."""
     channels = session.exec(select(HoneypotChannel).where(HoneypotChannel.guild_id == guild_id)).all()

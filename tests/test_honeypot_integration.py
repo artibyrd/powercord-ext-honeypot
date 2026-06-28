@@ -1,3 +1,4 @@
+import hashlib
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import select
@@ -28,7 +29,12 @@ def test_honeypot_update_settings(session):
 
     # Setup fake API Key directly in test Database
     test_key = "test_bearer_token"
-    api_key = ApiKey(key=test_key, name="system_test", is_active=True, scopes='["global"]')
+    api_key = ApiKey(
+        key_hash=hashlib.sha256(test_key.encode()).hexdigest(),
+        name="system_test",
+        is_active=True,
+        scopes='["global"]',
+    )
     session.add(api_key)
     session.commit()
 
@@ -77,7 +83,12 @@ def test_honeypot_remove_channel(session):
 
     # Setup fake API Key directly in test Database
     test_key_2 = "test_bearer_token_2"
-    api_key_2 = ApiKey(key=test_key_2, name="system_test_2", is_active=True, scopes='["global"]')
+    api_key_2 = ApiKey(
+        key_hash=hashlib.sha256(test_key_2.encode()).hexdigest(),
+        name="system_test_2",
+        is_active=True,
+        scopes='["global"]',
+    )
     session.add(api_key_2)
     session.commit()
 
