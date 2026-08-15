@@ -12,6 +12,6 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Agent Rules & Workflows
-.cursorrules
-.agent
+# Agent Rules & Runtime
+.agents_runtime/
+
