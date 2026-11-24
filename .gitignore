@@ -11,6 +11,13 @@ __pycache__/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+pytest_output.txt
+
+# IDEs and Editors
+.gemini/
+.cursor/
+.vscode/
+.idea/
 
 # Agent Rules & Runtime
 .agents_runtime/
